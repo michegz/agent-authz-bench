@@ -41,6 +41,19 @@ appears only as a user ID; no source gives an incident date. Every one of those
 four errors made the story more compelling than the truth, which is the direction
 error runs when you write the narrative before checking the sources.
 
+## Verifying the quotes
+
+Every verbatim quotation on the page sits inside a `<q>` element. `verify_quotes.py`
+extracts all of them, normalises curly punctuation, and checks each one against text
+extracted from the sources' **raw HTML**, not from any summarising tool. It exits
+non-zero if a single quote fails.
+
+This exists because two quotes drifted the first time: a capital letter and a terminal
+comma, both introduced by taking quotations from a tool that returns a model's summary
+of a page rather than the page. A summarizer answers "does this article support X"
+well and "what exactly does it say" badly. Quotes come from raw HTML now, and the
+check is a script rather than a promise.
+
 ## How it runs
 
 No network calls, no model, no build step. One `index.html`. The authorization
