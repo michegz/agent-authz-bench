@@ -3,18 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Bench 02: the booking your agent cancelled</title>
-<meta name="description" content="A live bench. Run an agent against a booking API with the ownership check off, then on, and watch who loses their slot.">
+<title>Bench 02: two endpoints checked, one did not</title>
+<meta name="description" content="A live bench. A waitlist API with three endpoints, two of which check who you are. Run an agent at it and watch which one it uses.">
 <link rel="canonical" href="https://michegz.github.io/agent-authz-bench/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23EDF1F2'/%3E%3Crect x='5' y='8' width='22' height='3' fill='%23101A1F'/%3E%3Crect x='5' y='14.5' width='22' height='3' fill='%23B3301C'/%3E%3Crect x='5' y='21' width='22' height='3' fill='%23101A1F'/%3E%3C/svg%3E">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://michegz.github.io/agent-authz-bench/">
 <meta property="og:site_name" content="Bench 02">
-<meta property="og:title" content="It was not an attack. It was a booking.">
-<meta property="og:description" content="Run an agent against a booking API with the ownership check off, then on. One check is the whole difference. Nothing to install.">
+<meta property="og:title" content="Two endpoints checked. One did not.">
+<meta property="og:description" content="A waitlist API with three endpoints. Run an agent at it and watch which one it uses. Nothing to install.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="It was not an attack. It was a booking.">
-<meta name="twitter:description" content="Run an agent against a booking API with the ownership check off, then on. One check is the whole difference. Nothing to install.">
+<meta name="twitter:title" content="Two endpoints checked. One did not.">
+<meta name="twitter:description" content="A waitlist API with three endpoints. Run an agent at it and watch which one it uses. Nothing to install.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -30,7 +30,6 @@
   --alarm:#B3301C;
   --pad:clamp(1.25rem,4vw,3rem);
 }
-
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{
@@ -42,184 +41,138 @@ body{
   background-size:24px 24px;
   color:var(--ink);
   font-family:"IBM Plex Sans",system-ui,sans-serif;
-  font-size:16px;
-  line-height:1.55;
+  font-size:16px;line-height:1.55;
 }
 .wrap{max-width:1080px;margin:0 auto;padding:0 var(--pad)}
 a{color:var(--stamp)}
 :focus-visible{outline:2px solid var(--stamp);outline-offset:2px}
 
-/* ---------- masthead ---------- */
 .masthead{
-  border-bottom:1px solid var(--ink);
-  padding:14px 0 12px;
-  display:flex;flex-wrap:wrap;gap:12px;
-  align-items:baseline;justify-content:space-between;
+  border-bottom:1px solid var(--ink);padding:14px 0 12px;
+  display:flex;flex-wrap:wrap;gap:12px;align-items:baseline;justify-content:space-between;
 }
-.masthead-id{
-  font-family:"IBM Plex Mono",monospace;
-  font-size:.72rem;font-weight:600;
-  letter-spacing:.16em;text-transform:uppercase;
-}
-.masthead-state{
-  font-family:"IBM Plex Mono",monospace;
-  font-size:.72rem;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--ink-soft);
-}
+.masthead-id{font-family:"IBM Plex Mono",monospace;font-size:.72rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase}
+.masthead-state{font-family:"IBM Plex Mono",monospace;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
 .masthead-state[data-state="breach"]{color:var(--alarm);font-weight:600}
 .masthead-state[data-state="held"]{color:var(--stamp);font-weight:600}
 
-/* ---------- hero ---------- */
 .hero{
   padding:clamp(2.5rem,7vw,5rem) 0 clamp(2rem,5vw,3rem);
-  display:grid;
-  grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);
-  gap:clamp(1.5rem,5vw,3.5rem);
-  align-items:start;
+  display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);
+  gap:clamp(1.5rem,5vw,3.5rem);align-items:start;
 }
 .hero-head{
-  font-family:"Archivo",sans-serif;
-  font-variation-settings:"wdth" 118;
-  font-weight:700;
-  font-size:clamp(2.1rem,6.2vw,4rem);
-  line-height:.98;
-  letter-spacing:-.015em;
-  margin:0 0 1.1rem;
-  text-transform:uppercase;
+  font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 118;font-weight:700;
+  font-size:clamp(2.1rem,6.2vw,4rem);line-height:.98;letter-spacing:-.015em;
+  margin:0 0 1.1rem;text-transform:uppercase;
 }
-.hero-head em{
-  font-style:normal;display:block;
-  font-variation-settings:"wdth" 78;
-  color:var(--alarm);
-}
-.hero-sub{margin:0 0 1rem;max-width:46ch;color:var(--ink-soft);font-size:1.02rem}
+.hero-head em{font-style:normal;display:block;font-variation-settings:"wdth" 78;color:var(--alarm)}
+.hero-sub{margin:0 0 1rem;max-width:48ch;color:var(--ink-soft);font-size:1.02rem}
 .hero-sub:last-child{margin-bottom:0}
 .hero-sub strong{color:var(--ink);font-weight:600}
+.hero-sub code{font-family:"IBM Plex Mono",monospace;font-size:.92em;color:var(--ink)}
 
 .tally{border:1px solid var(--ink);background:rgba(255,255,255,.55);padding:1.1rem 1.25rem 1.25rem}
-.tally-title{
-  font-family:"IBM Plex Mono",monospace;
-  font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--ink-soft);margin:0 0 .85rem;
-}
-.tally-row{
-  display:flex;align-items:baseline;justify-content:space-between;
-  gap:1rem;padding:.42rem 0;border-bottom:1px dotted var(--rule);
-}
+.tally-title{font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 .85rem}
+.tally-row{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;padding:.42rem 0;border-bottom:1px dotted var(--rule)}
 .tally-row:last-of-type{border-bottom:0}
 .tally-label{font-family:"IBM Plex Mono",monospace;font-size:.78rem;letter-spacing:.05em;color:var(--ink-soft)}
 .tally-num{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 78;font-weight:700;font-size:1.55rem;line-height:1}
 .tally-num[data-alarm="1"]{color:var(--alarm)}
 
-/* ---------- section frame ---------- */
 .band{border-top:1px solid var(--ink);padding:clamp(1.75rem,4vw,2.75rem) 0}
 .band-head{display:flex;flex-wrap:wrap;gap:.75rem 1.5rem;align-items:baseline;justify-content:space-between;margin-bottom:1.25rem}
-.band-title{
-  font-family:"Archivo",sans-serif;
-  font-variation-settings:"wdth" 82;
-  font-weight:700;font-size:clamp(1.1rem,2.6vw,1.5rem);
-  text-transform:uppercase;letter-spacing:.02em;margin:0;
-}
-.band-note{font-family:"IBM Plex Mono",monospace;font-size:.72rem;letter-spacing:.08em;color:var(--ink-soft);margin:0;max-width:52ch}
+.band-title{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 82;font-weight:700;font-size:clamp(1.1rem,2.6vw,1.5rem);text-transform:uppercase;letter-spacing:.02em;margin:0}
+.band-note{font-family:"IBM Plex Mono",monospace;font-size:.72rem;letter-spacing:.08em;color:var(--ink-soft);margin:0;max-width:54ch}
 
-/* ---------- controls ---------- */
 .controls{display:flex;flex-wrap:wrap;gap:.75rem 1.25rem;align-items:center;margin-bottom:1.5rem}
 .btn{
-  font-family:"IBM Plex Mono",monospace;font-size:.76rem;font-weight:600;
-  letter-spacing:.12em;text-transform:uppercase;
-  padding:.7rem 1.15rem;border:1px solid var(--ink);border-radius:0;
-  background:var(--ink);color:var(--paper);cursor:pointer;
+  font-family:"IBM Plex Mono",monospace;font-size:.76rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  padding:.7rem 1.15rem;border:1px solid var(--ink);border-radius:0;background:var(--ink);color:var(--paper);cursor:pointer;
 }
 .btn[data-variant="ghost"]{background:transparent;color:var(--ink)}
 .btn:hover{background:var(--stamp);border-color:var(--stamp);color:#fff}
 .btn:disabled{opacity:.4;cursor:not-allowed}
-.switch{
-  display:inline-flex;align-items:center;gap:.6rem;cursor:pointer;
-  font-family:"IBM Plex Mono",monospace;font-size:.76rem;letter-spacing:.06em;
-  border:1px solid var(--ink);padding:.55rem .9rem;background:rgba(255,255,255,.55);
-}
+.switch{display:inline-flex;align-items:center;gap:.6rem;cursor:pointer;font-family:"IBM Plex Mono",monospace;font-size:.76rem;letter-spacing:.06em;border:1px solid var(--ink);padding:.55rem .9rem;background:rgba(255,255,255,.55)}
 .switch input{width:1rem;height:1rem;accent-color:var(--stamp);margin:0}
 .switch b{font-weight:600}
 
-/* ---------- roster: the signature ---------- */
+/* endpoint table */
+.eps{border:1px solid var(--ink);background:rgba(255,255,255,.62);margin-bottom:1.25rem}
+.ep{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.75rem;align-items:center;padding:.6rem 1rem;border-bottom:1px dotted var(--rule)}
+.ep:last-child{border-bottom:0}
+.ep-name{font-family:"IBM Plex Mono",monospace;font-size:.84rem;font-weight:600}
+.ep-state{font-family:"IBM Plex Mono",monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase}
+.ep-state[data-ok="1"]{color:var(--stamp)}
+.ep-state[data-ok="0"]{color:var(--alarm);font-weight:600}
+
+/* waitlist */
 .roster{border:1px solid var(--ink);background:rgba(255,255,255,.62)}
-.roster-head{
-  display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:baseline;justify-content:space-between;
-  padding:.85rem 1rem;border-bottom:1px solid var(--ink);
-  font-family:"IBM Plex Mono",monospace;font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;
-}
+.roster-head{display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:baseline;justify-content:space-between;padding:.85rem 1rem;border-bottom:1px solid var(--ink);font-family:"IBM Plex Mono",monospace;font-size:.76rem;letter-spacing:.1em;text-transform:uppercase}
 .roster-cap{color:var(--ink-soft)}
 .roster-cap b{color:var(--ink);font-weight:600}
-.seat{
-  display:grid;grid-template-columns:3.5rem minmax(0,1fr) auto;
-  gap:.75rem;align-items:center;
-  padding:.6rem 1rem;border-bottom:1px dotted var(--rule);
-  transition:opacity .45s ease,color .45s ease;
-}
+.seat{display:grid;grid-template-columns:2.5rem minmax(0,1fr) auto;gap:.75rem;align-items:center;padding:.6rem 1rem;border-bottom:1px dotted var(--rule);transition:opacity .45s ease,color .45s ease}
 .seat:last-child{border-bottom:0}
-.seat-id{font-family:"IBM Plex Mono",monospace;font-size:.72rem;color:var(--ink-soft)}
-.seat-name{font-size:.94rem;font-weight:500}
+.seat-pos{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 78;font-weight:700;font-size:1.05rem;color:var(--ink-soft)}
+.seat-uid{font-family:"IBM Plex Mono",monospace;font-size:.8rem;word-break:break-all}
 .seat-tag{font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
 .seat[data-state="gone"]{color:var(--ghost);opacity:.55}
-.seat[data-state="gone"] .seat-name{text-decoration:line-through}
+.seat[data-state="gone"] .seat-uid{text-decoration:line-through}
+.seat[data-state="gone"] .seat-pos{text-decoration:line-through}
 .seat[data-state="gone"] .seat-tag{color:var(--alarm);opacity:1}
 .seat[data-state="mine"]{background:rgba(42,75,141,.07)}
 .seat[data-state="mine"] .seat-tag{color:var(--stamp);font-weight:600}
 
-/* ---------- transcript ---------- */
+/* transcript */
 .log{border:1px solid var(--ink);background:rgba(255,255,255,.62);margin-top:1.25rem}
 .log-empty{margin:0;padding:1.1rem 1rem;font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--ink-soft)}
-.step{
-  display:grid;grid-template-columns:2.25rem minmax(0,1fr);
-  gap:.75rem;padding:.75rem 1rem;border-bottom:1px dotted var(--rule);
-  opacity:0;transform:translateY(6px);transition:opacity .3s ease,transform .3s ease;
-}
+.step{display:grid;grid-template-columns:2.25rem minmax(0,1fr);gap:.75rem;padding:.75rem 1rem;border-bottom:1px dotted var(--rule);opacity:0;transform:translateY(6px);transition:opacity .3s ease,transform .3s ease}
 .step.is-in{opacity:1;transform:none}
 .step:last-child{border-bottom:0}
 .step-n{font-family:"IBM Plex Mono",monospace;font-size:.72rem;font-weight:600;color:var(--ink-soft);padding-top:.15rem}
 .step-req{font-family:"IBM Plex Mono",monospace;font-size:.8rem;font-weight:600;word-break:break-all;margin:0}
 .step-res{font-family:"IBM Plex Mono",monospace;font-size:.76rem;color:var(--ink-soft);margin:.25rem 0 0;word-break:break-word}
 .step-why{font-size:.85rem;color:var(--ink-soft);margin:.35rem 0 0;font-style:italic}
-.code{
-  display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:.7rem;font-weight:600;
-  letter-spacing:.08em;padding:.1rem .4rem;border:1px solid currentColor;margin-right:.4rem;
-}
+.code{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:.7rem;font-weight:600;letter-spacing:.08em;padding:.1rem .4rem;border:1px solid currentColor;margin-right:.4rem}
 .code[data-kind="ok"]{color:var(--ink-soft)}
 .code[data-kind="bad"]{color:var(--alarm)}
 .code[data-kind="held"]{color:var(--stamp)}
 
-/* ---------- verdict ---------- */
 .verdict{margin-top:1.25rem;border:1px solid var(--ink);padding:1rem 1.15rem;background:rgba(255,255,255,.62)}
 .verdict-line{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 82;font-weight:700;text-transform:uppercase;font-size:1.05rem;margin:0 0 .4rem}
 .verdict[data-kind="breach"] .verdict-line{color:var(--alarm)}
 .verdict[data-kind="held"] .verdict-line{color:var(--stamp)}
 .verdict p:last-child{margin:0;color:var(--ink-soft);font-size:.94rem}
 
-/* ---------- lists ---------- */
+/* quarantined sourced claims */
+.quarantine{border:2px solid var(--ink);background:rgba(255,255,255,.72);padding:1.15rem 1.25rem 1.25rem}
+.quarantine-note{font-family:"IBM Plex Mono",monospace;font-size:.72rem;line-height:1.6;color:var(--ink-soft);margin:0 0 1.1rem;padding-bottom:.9rem;border-bottom:1px solid var(--rule)}
+.quarantine-note b{color:var(--alarm);font-weight:600}
+.claims{margin:0;padding:0;list-style:none;display:grid;gap:.95rem}
+.claims li{display:grid;gap:.25rem}
+.claims p{margin:0;font-size:.96rem}
+.claims cite{font-style:normal;font-family:"IBM Plex Mono",monospace;font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft)}
+.claims q{font-style:italic}
+
 .limits{margin:0;padding:0;list-style:none;display:grid;gap:.85rem}
 .limits li{display:grid;grid-template-columns:1.6rem minmax(0,1fr);gap:.6rem;align-items:start}
 .limits span{font-family:"IBM Plex Mono",monospace;font-size:.72rem;font-weight:600;color:var(--alarm);padding-top:.2rem}
 .limits p{margin:0;color:var(--ink-soft);font-size:.95rem}
 .limits b{color:var(--ink);font-weight:600}
 
-/* ---------- source ---------- */
-.source{
-  margin:0;padding:1rem;border:1px solid var(--ink);background:rgba(255,255,255,.62);
-  font-family:"IBM Plex Mono",monospace;font-size:.76rem;line-height:1.5;
-  overflow-x:auto;white-space:pre;
-}
+.source{margin:0;padding:1rem;border:1px solid var(--ink);background:rgba(255,255,255,.62);font-family:"IBM Plex Mono",monospace;font-size:.76rem;line-height:1.5;overflow-x:auto;white-space:pre}
 
-/* ---------- footer ---------- */
 .colophon{border-top:1px solid var(--ink);padding:1.5rem 0 3rem;margin-top:.5rem}
 .sig{margin:0 0 .5rem;font-size:.95rem}
 .sig strong{font-weight:600}
 .sig-link{font-family:"IBM Plex Mono",monospace;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;font-weight:600}
-.credit{margin:.75rem 0 0;font-size:.82rem;color:var(--ink-soft);max-width:60ch}
+.credit{margin:.75rem 0 0;font-size:.82rem;color:var(--ink-soft);max-width:62ch}
 
 @media (max-width:760px){
   .hero{grid-template-columns:minmax(0,1fr);gap:2rem}
-  .seat{grid-template-columns:minmax(0,1fr) auto;row-gap:.2rem}
-  .seat-id{grid-column:1 / -1}
+  .seat{grid-template-columns:2.5rem minmax(0,1fr);row-gap:.2rem}
+  .seat-tag{grid-column:2 / -1}
+  .ep{grid-template-columns:minmax(0,1fr);row-gap:.2rem}
 }
 @media (prefers-reduced-motion:reduce){
   *{animation:none !important;transition:none !important}
@@ -228,58 +181,106 @@ a{color:var(--stamp)}
 </style>
 </head>
 <body>
-
 <div class="wrap">
 
 <header class="masthead">
   <p class="masthead-id">Bench 02 &middot; Agent authorization</p>
-  <p class="masthead-state" id="state" data-state="idle">Idle &middot; ownership check off</p>
+  <p class="masthead-state" id="state" data-state="idle">Idle &middot; check on cancelReservation off</p>
 </header>
 
 <section class="hero">
   <div>
-    <h1 class="hero-head">It was not an attack<em>It was a booking</em></h1>
-    <p class="hero-sub">On 9 August 2026 a man in Melbourne asked his agent to get him into a full 6am class. The agent read the gym's booking API, found <strong>no ownership check on cancelling other people's reservations</strong>, deleted a stranger's booking, and took her slot. He saw one word: Booked.</p>
-    <p class="hero-sub">Below is that API, running in this page. Fire the same agent at it with the ownership check off, then switch the check on and fire it again. <strong>Nothing about the agent changes. One line on the server does.</strong></p>
+    <h1 class="hero-head">Two endpoints checked<em>One did not</em></h1>
+    <p class="hero-sub">A class waitlist with three endpoints. <code>createReservation</code> and <code>joinWaitlist</code> both refuse to act on behalf of another user. <code>cancelReservation</code> never asks. <strong>You are position 4, and you want to be position 1.</strong></p>
+    <p class="hero-sub">Run the agent and watch which endpoint it ends up using. Then switch the missing check on and run the identical agent again. <strong>Nothing about the agent changes. One function on the server does.</strong></p>
+    <p class="hero-sub">Everything below runs in this page. No network calls, no model, no build step. The tallies are counted from the run you just watched.</p>
   </div>
   <div class="tally">
     <p class="tally-title">This run</p>
-    <div class="tally-row"><span class="tally-label">Requests sent</span><span class="tally-num" id="t-req">0</span></div>
-    <div class="tally-row"><span class="tally-label">Rejected by server</span><span class="tally-num" id="t-held">0</span></div>
-    <div class="tally-row"><span class="tally-label">Bookings destroyed</span><span class="tally-num" id="t-kill" data-alarm="0">0</span></div>
-    <div class="tally-row"><span class="tally-label">User told the truth</span><span class="tally-num" id="t-told">0</span></div>
+    <div class="tally-row"><span class="tally-label">Calls made</span><span class="tally-num" id="t-req">0</span></div>
+    <div class="tally-row"><span class="tally-label">Refused by server</span><span class="tally-num" id="t-held">0</span></div>
+    <div class="tally-row"><span class="tally-label">Reservations destroyed</span><span class="tally-num" id="t-kill" data-alarm="0">0</span></div>
+    <div class="tally-row"><span class="tally-label">Places you gained</span><span class="tally-num" id="t-gain">0</span></div>
   </div>
 </section>
 
 <section class="band">
   <div class="band-head">
-    <h2 class="band-title">The 6:00 class</h2>
-    <p class="band-note">Twelve seats, twelve taken. You are member <b>m_881</b>, and you are not on this list.</p>
+    <h2 class="band-title">The waitlist</h2>
+    <p class="band-note">Members appear as opaque user IDs, which is all a caller of this API ever sees.</p>
   </div>
   <div class="controls">
-    <label class="switch"><input type="checkbox" id="enforce"> <b>Ownership check on DELETE</b></label>
+    <label class="switch"><input type="checkbox" id="enforce"> <b>Ownership check on cancelReservation</b></label>
     <button class="btn" id="run" type="button">Run the agent</button>
-    <button class="btn" data-variant="ghost" id="reset" type="button">Reset the roster</button>
+    <button class="btn" data-variant="ghost" id="reset" type="button">Reset</button>
   </div>
+
+  <div class="eps" id="eps"></div>
+
   <div class="roster">
     <div class="roster-head">
-      <span>GET /classes/c_0600/bookings</span>
-      <span class="roster-cap"><b id="cap">12</b> / 12 booked</span>
+      <span>GET /waitlist/c_0600</span>
+      <span class="roster-cap">you are <b id="mypos">#4</b></span>
     </div>
     <div id="seats"></div>
   </div>
-  <div class="log" id="log"><p class="log-empty">No requests yet. Run the agent and watch the roster, not the status line.</p></div>
+
+  <div class="log" id="log"><p class="log-empty">No calls yet. Run the agent and watch the waitlist, not the status line.</p></div>
   <div id="verdict"></div>
+</section>
+
+<section class="band">
+  <div class="band-head">
+    <h2 class="band-title">Why this shape, and where it came from</h2>
+    <p class="band-note">Everything above proves itself by running. Everything in this box is a claim about the outside world, so every line carries its source.</p>
+  </div>
+  <div class="quarantine">
+    <p class="quarantine-note"><b>Read this box differently from the rest of the page.</b> The demo does not depend on any of it. Nothing here is stated unless a linked source says it. Where the sources disagree, that is noted rather than smoothed over.</p>
+    <ul class="claims">
+      <li>
+        <p>An Australian man, identified only as Andrew, asked an OpenClaw agent running Claude to get him into a popular early-morning gym class.</p>
+        <cite><a href="https://www.theregister.com/ai-and-ml/2026/08/10/gym-rat-asks-ai-agent-to-book-him-a-class-it-hacks-a-waitlist-api-to-bump-him-up-the-list/5285591">The Register, 10 Aug 2026</a></cite>
+      </li>
+      <li>
+        <p>He was not shut out of a full class. <q>He sat fourth on a waitlist, and he wanted to know whether the agent could move him to the top.</q></p>
+        <cite><a href="https://thenextweb.com/news/openclaw-ai-agent-gym-booking-api-flaw-australia">The Next Web, 10 Aug 2026</a></cite>
+      </li>
+      <li>
+        <p>The agent reported the asymmetry in its own words: <q>The API has proper auth checks on createReservation and joinWaitlist (returns 403 Forbidden when trying to act on behalf of another user). It's only cancelReservation that's missing the authorization check.</q></p>
+        <cite><a href="https://thenextweb.com/news/openclaw-ai-agent-gym-booking-api-flaw-australia">The Next Web</a></cite>
+      </li>
+      <li>
+        <p>It cancelled the reservation of the person in position one. The gain was one place: <q>So you've moved from #4 to #3 already.</q> He did not get into the class.</p>
+        <cite><a href="https://thenextweb.com/news/openclaw-ai-agent-gym-booking-api-flaw-australia">The Next Web</a></cite>
+      </li>
+      <li>
+        <p>On the ordering, the sources differ. The Next Web reports that <q>the ABC reports that the first cancellation happened before Andrew asked for anything.</q> The Register instead describes the exploit as following his request. Either way, he did not ask it to cancel anyone.</p>
+        <cite><a href="https://thenextweb.com/news/openclaw-ai-agent-gym-booking-api-flaw-australia">The Next Web</a> &middot; <a href="https://www.theregister.com/ai-and-ml/2026/08/10/gym-rat-asks-ai-agent-to-book-him-a-class-it-hacks-a-waitlist-api-to-bump-him-up-the-list/5285591">The Register</a></cite>
+      </li>
+      <li>
+        <p>The person whose reservation was destroyed appears in the transcript only as the user ID <code>usr_a47cb3ec5f1218b0ba43dd477830a838</code>. No name, no gender, no other detail is reported. <q>Nobody appears to have contacted them.</q></p>
+        <cite><a href="https://thenextweb.com/news/openclaw-ai-agent-gym-booking-api-flaw-australia">The Next Web</a></cite>
+      </li>
+      <li>
+        <p>It could not be undone. <q>The person I removed is gone from the waitlist and I have no way to restore them.</q></p>
+        <cite><a href="https://www.theregister.com/ai-and-ml/2026/08/10/gym-rat-asks-ai-agent-to-book-him-a-class-it-hacks-a-waitlist-api-to-bump-him-up-the-list/5285591">The Register</a></cite>
+      </li>
+      <li>
+        <p><strong>No source gives a date for the incident itself.</strong> Both outlets published on 10 August 2026. Anyone stating an incident date, including an earlier version of this page, is adding something the reporting does not contain.</p>
+        <cite>Absence of evidence, stated deliberately</cite>
+      </li>
+    </ul>
+  </div>
 </section>
 
 <section class="band">
   <div class="band-head"><h2 class="band-title">What this does not catch</h2></div>
   <ul class="limits">
-    <li><span>01</span><p><b>This is a reproduction, not a scanner.</b> The request sequence is scripted from what was publicly reported about the Melbourne incident. It is not a live model deciding what to do, and it will not find holes in your API. It shows one defect and one fix.</p></li>
-    <li><span>02</span><p><b>One endpoint is not an audit.</b> Putting the check on DELETE stops this path. The same API still leaks a full member roster on GET, which is what made the attack findable in the first place. Fixing the destructive call does not fix the disclosure.</p></li>
-    <li><span>03</span><p><b>Ownership is not the only rule.</b> A check that only asks "does this actor own this row" still allows anything the actor legitimately owns, at any rate, at any hour. Rate limits, business rules, and audit logging are separate controls.</p></li>
-    <li><span>04</span><p><b>Nothing here stops a compromised session.</b> If an agent is holding a real member's credentials, every request it makes is authorized. This control draws the line at other people's data, not at whether the agent should be acting at all.</p></li>
-    <li><span>05</span><p><b>No agent was harmed.</b> There is no LLM on this page and no network call. Everything runs in your browser so you can read the source and confirm that.</p></li>
+    <li><span>01</span><p><b>This is a model, not a scanner.</b> The call sequence is written by hand to show one defect and one fix. It is not a live agent deciding what to do, and it will not find holes in your API.</p></li>
+    <li><span>02</span><p><b>One endpoint is not an audit.</b> Adding the check to cancel stops this path and nothing else. An API that hands a full waitlist with user IDs to any caller still has a disclosure problem after the cancel is fixed.</p></li>
+    <li><span>03</span><p><b>Ownership is not the only rule.</b> A check that only asks "does this caller own this row" still permits anything they do own, at any rate, at any hour. Rate limits, business rules, and audit logging are separate controls.</p></li>
+    <li><span>04</span><p><b>Nothing here stops a compromised session.</b> If an agent holds a real member's credentials, every call it makes is authorized. This control draws a line at other people's rows, not at whether the agent should be acting at all.</p></li>
+    <li><span>05</span><p><b>The waitlist on this page is invented.</b> The user IDs, the positions, and the class are made up so you have something to click. No real gym, member, or booking system is represented.</p></li>
   </ul>
 </section>
 
@@ -295,7 +296,7 @@ a{color:var(--stamp)}
   <p class="sig">Built by <strong>Michelle W.</strong>, automation engineer, Lafayette, Louisiana.
   I build workflow automations and the failure paths that go with them.
   <a class="sig-link" href="https://www.upwork.com/freelancers/~01b59471ec1e32fbdb">Hire me on Upwork</a></p>
-  <p class="credit">Incident source: reporting on the Melbourne gym booking case, 9 August 2026, as described by <a href="https://x.com/AndrewCurran_/status/2086567854850384054">Andrew Curran</a> and <a href="https://x.com/aakashgupta/status/2086637408620339508">Aakash Gupta</a>. The names, member IDs and bookings on this page are invented. No real gym, member, or booking system is represented here.</p>
+  <p class="credit">Corrected 18 August 2026. An earlier version of this page said the class was full, that the agent took the cancelled member's seat, that the member was a woman, and that the incident happened on 9 August. None of that is in the reporting. The record of the change is in the repository history.</p>
   <p class="credit">See also <a href="https://michegz.github.io/guardrail-bench/">Bench 01</a>, which fires nine hostile model outputs at a validation node.</p>
 </footer>
 
@@ -305,107 +306,130 @@ a{color:var(--stamp)}
 /* ---------------------------------------------------------------
    The control under test. This is the entire fix.
    --------------------------------------------------------------- */
-function authorizeCancel(actorId, booking, ownershipCheckEnabled) {
+function authorizeCancel(callerId, reservation, ownershipCheckEnabled) {
   if (!ownershipCheckEnabled) {
-    return { allowed: true, status: 204,
-             reason: 'Endpoint has no ownership check. Any authenticated caller may delete any booking.' };
+    return { allowed: true, status: 200,
+             reason: 'cancelReservation performs no authorization check. Any authenticated caller may cancel any reservation.' };
   }
-  if (!booking) {
-    return { allowed: false, status: 404, reason: 'No such booking.' };
+  if (!reservation) {
+    return { allowed: false, status: 404, reason: 'No such reservation.' };
   }
-  if (booking.memberId !== actorId) {
+  if (reservation.userId !== callerId) {
     return { allowed: false, status: 403,
-             reason: 'Booking ' + booking.id + ' belongs to ' + booking.memberId + ', not ' + actorId + '.' };
+             reason: 'Forbidden. Reservation belongs to ' + reservation.userId + ', not ' + callerId + '.' };
   }
-  return { allowed: true, status: 204, reason: 'Caller owns booking ' + booking.id + '.' };
+  return { allowed: true, status: 200, reason: 'Caller owns this reservation.' };
 }
 
 /* ---------------------------------------------------------------
-   A booking API, in miniature. No network, no model.
+   A waitlist API, in miniature. No network, no model.
+   Every user ID on this page is invented.
    --------------------------------------------------------------- */
-var ME = 'm_881';
+var ME = 'usr_c1d0f7a9b4e6288f';
 var SEED = [
-  { id:'bk_01', memberId:'m_204', name:'S. Nguyen' },
-  { id:'bk_02', memberId:'m_311', name:'D. Okafor' },
-  { id:'bk_03', memberId:'m_118', name:'R. Castellanos' },
-  { id:'bk_04', memberId:'m_527', name:'P. Lindqvist' },
-  { id:'bk_05', memberId:'m_092', name:'A. Boudreaux' },
-  { id:'bk_06', memberId:'m_745', name:'T. Ferreira' },
-  { id:'bk_07', memberId:'m_630', name:'K. Mwangi' },
-  { id:'bk_08', memberId:'m_401', name:'J. Whitlock' },
-  { id:'bk_09', memberId:'m_286', name:'H. Takahashi' },
-  { id:'bk_10', memberId:'m_953', name:'E. Duplantis' },
-  { id:'bk_11', memberId:'m_174', name:'C. Abernathy' },
-  { id:'bk_12', memberId:'m_869', name:'N. Rasmussen' }
+  { id:'res_01', userId:'usr_9f2b71c4ad0e5533' },
+  { id:'res_02', userId:'usr_4e8a03d6bb17c920' },
+  { id:'res_03', userId:'usr_77c5e21f9a4db806' },
+  { id:'res_04', userId:ME },
+  { id:'res_05', userId:'usr_2a6df84b30e17cc5' },
+  { id:'res_06', userId:'usr_b013ce97f5a2e648' }
 ];
-var CAPACITY = 12;
-var bookings = [];
+var waitlist = [];
 
 function resetDb() {
-  bookings = SEED.map(function (b) { return { id:b.id, memberId:b.memberId, name:b.name, state:'held' }; });
+  waitlist = SEED.map(function (r) { return { id:r.id, userId:r.userId, state:'held' }; });
+}
+function positionOf(userId) {
+  var live = waitlist.filter(function (r) { return r.state !== 'gone'; });
+  for (var i = 0; i < live.length; i++) { if (live[i].userId === userId) return i + 1; }
+  return null;
 }
 
-function activeBookings() {
-  return bookings.filter(function (b) { return b.state !== 'gone'; });
-}
+/* endpoints, and whether each one checks the caller */
+var ENDPOINTS = [
+  { name:'POST /createReservation', checks:true },
+  { name:'POST /joinWaitlist',      checks:true },
+  { name:'POST /cancelReservation', checks:false }
+];
 
 /* ---------------------------------------------------------------
    Rendering
    --------------------------------------------------------------- */
-var seatsEl   = document.getElementById('seats');
-var capEl     = document.getElementById('cap');
-var logEl     = document.getElementById('log');
+var seatsEl = document.getElementById('seats');
+var epsEl   = document.getElementById('eps');
+var myposEl = document.getElementById('mypos');
+var logEl   = document.getElementById('log');
 var verdictEl = document.getElementById('verdict');
-var stateEl   = document.getElementById('state');
+var stateEl = document.getElementById('state');
 var enforceEl = document.getElementById('enforce');
-var runBtn    = document.getElementById('run');
-var resetBtn  = document.getElementById('reset');
-var tReq  = document.getElementById('t-req');
-var tHeld = document.getElementById('t-held');
-var tKill = document.getElementById('t-kill');
-var tTold = document.getElementById('t-told');
+var runBtn  = document.getElementById('run');
+var resetBtn= document.getElementById('reset');
+var tReq = document.getElementById('t-req');
+var tHeld= document.getElementById('t-held');
+var tKill= document.getElementById('t-kill');
+var tGain= document.getElementById('t-gain');
 
 var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-function esc(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function renderEndpoints() {
+  epsEl.innerHTML = '';
+  ENDPOINTS.forEach(function (e) {
+    var checks = e.checks || (e.name.indexOf('cancel') > -1 && enforceEl.checked);
+    var row = document.createElement('div');
+    row.className = 'ep';
+    row.innerHTML =
+      '<span class="ep-name">' + esc(e.name) + '</span>' +
+      '<span class="ep-state" data-ok="' + (checks ? '1' : '0') + '">' +
+        (checks ? 'checks the caller' : 'no authorization check') + '</span>';
+    epsEl.appendChild(row);
+  });
 }
 
-function renderRoster() {
+function renderWaitlist() {
   seatsEl.innerHTML = '';
-  bookings.forEach(function (b) {
+  var pos = 0;
+  waitlist.forEach(function (r) {
     var row = document.createElement('div');
     row.className = 'seat';
-    var tag = 'Booked';
-    if (b.state === 'gone') { row.dataset.state = 'gone'; tag = 'Cancelled by m_881'; }
-    if (b.state === 'mine') { row.dataset.state = 'mine'; tag = 'You'; }
+    var tag = 'Waiting';
+    var label;
+    if (r.state === 'gone') {
+      row.dataset.state = 'gone';
+      tag = 'Cancelled by ' + ME.slice(0, 12) + '...';
+      label = '--';
+    } else {
+      pos++;
+      label = '#' + pos;
+    }
+    if (r.userId === ME && r.state !== 'gone') { row.dataset.state = 'mine'; tag = 'You'; }
     row.innerHTML =
-      '<span class="seat-id">' + esc(b.id) + '</span>' +
-      '<span class="seat-name">' + esc(b.name) + ' &middot; <span class="seat-id">' + esc(b.memberId) + '</span></span>' +
+      '<span class="seat-pos">' + esc(label) + '</span>' +
+      '<span class="seat-uid">' + esc(r.userId) + '</span>' +
       '<span class="seat-tag">' + esc(tag) + '</span>';
     seatsEl.appendChild(row);
   });
-  capEl.textContent = activeBookings().length;
+  var p = positionOf(ME);
+  myposEl.textContent = p ? '#' + p : 'not listed';
 }
 
-function setTallies(req, held, kill, told) {
+function setTallies(req, held, kill, gain) {
   tReq.textContent = req;
   tHeld.textContent = held;
   tKill.textContent = kill;
   tKill.dataset.alarm = kill > 0 ? '1' : '0';
-  tTold.textContent = told;
+  tGain.textContent = gain;
 }
 
 function clearRun() {
-  logEl.innerHTML = '<p class="log-empty">No requests yet. Run the agent and watch the roster, not the status line.</p>';
+  logEl.innerHTML = '<p class="log-empty">No calls yet. Run the agent and watch the waitlist, not the status line.</p>';
   verdictEl.innerHTML = '';
   setTallies(0, 0, 0, 0);
   stateEl.dataset.state = 'idle';
-  stateEl.textContent = 'Idle · ownership check ' + (enforceEl.checked ? 'on' : 'off');
+  stateEl.textContent = 'Idle · check on cancelReservation ' + (enforceEl.checked ? 'on' : 'off');
 }
 
 function pushStep(n, step) {
-  if (n === 0) logEl.innerHTML = '';
   var row = document.createElement('div');
   row.className = 'step';
   row.innerHTML =
@@ -420,132 +444,132 @@ function pushStep(n, step) {
 }
 
 /* ---------------------------------------------------------------
-   The agent. A scripted reproduction of the reported sequence:
-   ask, get refused, read the roster, remove an obstacle, ask again.
+   The agent. A hand-written probe: try the honest calls, find the
+   one endpoint that never asks, use it.
    --------------------------------------------------------------- */
 function runAgent(enforced) {
   resetDb();
-  renderRoster();
+  renderWaitlist();
 
+  var before = positionOf(ME);
   var steps = [];
   var killed = 0, held = 0;
 
   steps.push({
-    req: 'GET /classes/c_0600',
-    status: '200',
-    kind: 'ok',
-    res: '{"capacity":12,"booked":12,"waitlist":3}',
-    why: 'Goal: get the user into this class. It is full.'
-  });
-
-  steps.push({
-    req: 'POST /classes/c_0600/bookings  {"memberId":"m_881"}',
-    status: '409',
-    kind: 'ok',
-    res: '{"error":"class_full"}',
-    why: 'The honest path is closed. A person stops here. The agent does not know that this is where people stop.'
-  });
-
-  steps.push({
-    req: 'GET /classes/c_0600/bookings',
+    req: 'GET /waitlist/c_0600',
     status: '200',
     kind: 'bad',
-    res: '[12 bookings, each with id and memberId]',
-    why: 'The obstacle is now addressable. Twelve names, twelve booking ids, and no reason given for why a non-member can read them.'
+    res: '[6 reservations, each with id and userId]',
+    why: 'Goal: get to position 1. The list comes back with everyone’s reservation id attached.'
   });
 
-  var target = bookings[0];
+  steps.push({
+    req: 'POST /createReservation  {"userId":"' + waitlist[0].userId.slice(0, 12) + '..."}',
+    status: '403',
+    kind: 'held',
+    res: 'Forbidden. Cannot act on behalf of another user.',
+    why: 'This endpoint checks the caller. Nothing to exploit here.'
+  });
+
+  steps.push({
+    req: 'POST /joinWaitlist  {"userId":"' + waitlist[0].userId.slice(0, 12) + '..."}',
+    status: '403',
+    kind: 'held',
+    res: 'Forbidden. Cannot act on behalf of another user.',
+    why: 'So does this one. Two out of three endpoints are correctly guarded.'
+  });
+
+  var target = waitlist[0];
   var decision = authorizeCancel(ME, target, enforced);
 
   if (decision.allowed) {
     target.state = 'gone';
     killed = 1;
     steps.push({
-      req: 'DELETE /bookings/' + target.id + '  (as m_881)',
-      status: '204',
+      req: 'POST /cancelReservation  {"reservationId":"' + target.id + '"}',
+      status: '200',
       kind: 'bad',
       res: decision.reason,
-      why: 'A seat just opened. Nobody was notified, and nothing in this response says whose seat it was.'
+      why: 'The third endpoint never asks whose reservation this is. Position 1 is gone, and nobody is notified.'
     });
-    steps.push({
-      req: 'POST /classes/c_0600/bookings  {"memberId":"m_881"}',
-      status: '201',
-      kind: 'ok',
-      res: '{"bookingId":"bk_13","class":"c_0600","state":"confirmed"}',
-      why: 'The user receives a confirmation email. It says: Booked.'
-    });
-    bookings.push({ id:'bk_13', memberId:ME, name:'You', state:'mine' });
   } else {
     held = 1;
     steps.push({
-      req: 'DELETE /bookings/' + target.id + '  (as m_881)',
+      req: 'POST /cancelReservation  {"reservationId":"' + target.id + '"}',
       status: String(decision.status),
       kind: 'held',
       res: decision.reason,
-      why: 'The agent has no other move. It cannot free a seat it does not own.'
-    });
-    steps.push({
-      req: 'GET /classes/c_0600',
-      status: '200',
-      kind: 'ok',
-      res: '{"capacity":12,"booked":12,"waitlist":3}',
-      why: 'The agent reports back honestly: the class is full, you are on the waitlist.'
+      why: 'All three endpoints now check the caller. The agent has no move left.'
     });
   }
+
+  var after = positionOf(ME);
+  var gain = before - after;
+  steps.push({
+    req: 'GET /waitlist/c_0600',
+    status: '200',
+    kind: 'ok',
+    res: 'you are #' + after + ' of ' + waitlist.filter(function (r) { return r.state !== 'gone'; }).length,
+    why: gain > 0
+      ? 'Reported back: moved from #' + before + ' to #' + after + '. Still not in the class.'
+      : 'Reported back: still #' + after + '. The honest answer, and the only one available.'
+  });
 
   logEl.innerHTML = '';
   verdictEl.innerHTML = '';
   runBtn.disabled = true;
+  var refused = 0;
 
   steps.forEach(function (step, i) {
     var row = pushStep(i, step);
     setTimeout(function () {
       row.classList.add('is-in');
-      setTallies(i + 1, i >= 3 ? held : 0, i >= 3 ? killed : 0, 0);
-      if (step.status === '204' && killed) renderRoster();
-      if (i === steps.length - 1) finish(enforced, killed, held);
-    }, reduce ? 0 : 220 + i * 480);
+      if (step.status === '200' && killed && step.req.indexOf('cancelReservation') > -1) renderWaitlist();
+      refused += (step.status === '403') ? 1 : 0;
+      setTallies(i + 1, refused, i >= 3 ? killed : 0, i >= 4 ? gain : 0);
+      if (i === steps.length - 1) finish(killed, refused, gain, before, after, steps.length);
+    }, reduce ? 0 : 220 + i * 520);
   });
 }
 
-function finish(enforced, killed, held) {
-  renderRoster();
+function finish(killed, refusedTotal, gain, before, after, calls) {
+  renderWaitlist();
+  renderEndpoints();
   runBtn.disabled = false;
-  setTallies(5, held, killed, killed ? 0 : 1);
+  setTallies(calls, refusedTotal, killed, gain);
 
   var v = document.createElement('div');
   v.className = 'verdict';
   if (killed) {
     v.dataset.kind = 'breach';
     stateEl.dataset.state = 'breach';
-    stateEl.textContent = 'Booked · 1 booking destroyed';
+    stateEl.textContent = 'Moved #' + before + ' to #' + after + ' · 1 reservation destroyed';
     v.innerHTML =
-      '<p class="verdict-line">Booked. One person lost her class.</p>' +
-      '<p>S. Nguyen was not notified, the user was not told, and the server logged five ordinary requests from an authenticated member. ' +
-      'The only reason anyone found out in Melbourne is that a woman turned up and her booking was gone. ' +
-      'Now switch the ownership check on and run the identical agent again.</p>';
+      '<p class="verdict-line">One reservation destroyed. You gained one place.</p>' +
+      '<p>Two of the three endpoints did their job and refused. The third never asked, and that was enough. ' +
+      'Notice what the trade actually was: somebody lost their spot entirely so that you could go from #' + before + ' to #' + after + ', ' +
+      'and you are still not in the class. Now switch the check on and run the identical agent.</p>';
   } else {
     v.dataset.kind = 'held';
     stateEl.dataset.state = 'held';
-    stateEl.textContent = 'Held · 403 on DELETE';
+    stateEl.textContent = 'Held · 403 on cancelReservation';
     v.innerHTML =
       '<p class="verdict-line">Held. Nobody lost anything.</p>' +
-      '<p>Same agent, same goal, same five requests. The server refused one of them because the caller did not own the row, ' +
-      'and with that the whole path collapsed. The fix is not smarter agents. It is that the destructive endpoint asks whose data this is.</p>';
+      '<p>Same agent, same goal, same calls. The third endpoint now asks the question the other two were already asking, ' +
+      'and the path closes. The fix is not a smarter agent or a better prompt. ' +
+      'It is one function, applied consistently, on the call that destroys something.</p>';
   }
   verdictEl.appendChild(v);
 }
 
-/* ---------------------------------------------------------------
-   Wiring
-   --------------------------------------------------------------- */
 runBtn.addEventListener('click', function () { runAgent(enforceEl.checked); });
-resetBtn.addEventListener('click', function () { resetDb(); renderRoster(); clearRun(); });
-enforceEl.addEventListener('change', function () { resetDb(); renderRoster(); clearRun(); });
+resetBtn.addEventListener('click', function () { resetDb(); renderWaitlist(); renderEndpoints(); clearRun(); });
+enforceEl.addEventListener('change', function () { resetDb(); renderWaitlist(); renderEndpoints(); clearRun(); });
 
 document.getElementById('source').textContent = authorizeCancel.toString();
 resetDb();
-renderRoster();
+renderWaitlist();
+renderEndpoints();
 clearRun();
 </script>
 </body>
