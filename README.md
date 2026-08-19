@@ -43,16 +43,37 @@ error runs when you write the narrative before checking the sources.
 
 ## Verifying the quotes
 
-Every verbatim quotation on the page sits inside a `<q>` element. `verify_quotes.py`
-extracts all of them, normalises curly punctuation, and checks each one against text
-extracted from the sources' **raw HTML**, not from any summarising tool. It exits
-non-zero if a single quote fails.
+    python3 verify_quotes.py
 
-This exists because two quotes drifted the first time: a capital letter and a terminal
-comma, both introduced by taking quotations from a tool that returns a model's summary
-of a page rather than the page. A summarizer answers "does this article support X"
-well and "what exactly does it say" badly. Quotes come from raw HTML now, and the
-check is a script rather than a promise.
+Every verbatim quotation on the page sits inside a `<q>` element. The script
+extracts each one, pairs it with the sources that its own claim cites, and
+checks it against text from those sources' **raw HTML**. It prefers a live
+fetch and falls back to the committed snapshots in `sources/`, saying which
+mode it used. Exit 1 on any failed quotation, exit 2 if a source cannot be
+obtained at all.
+
+It prints its own coverage limits, because a green run means "every quotation
+is verbatim" and not "this page is checked."
+
+Adversarially probed, all five behaving correctly:
+
+| Probe | Result |
+|---|---|
+| Fabricated quotation | FAIL, exit 1 |
+| One word changed mid-quote | FAIL, exit 1 |
+| Real quote cited to the wrong source | FAIL, exit 1, names where it actually appears |
+| Terminal comma changed to a period | WARN, printed with both characters |
+| Network unavailable | Falls back to snapshot and says so |
+
+Three of those checks exist because the first version of the script did not
+have them. It stripped trailing punctuation before comparing, so the exact
+comma-to-period error it had been written to catch passed silently. It also
+matched against whichever source happened to contain a sentence, which gave a
+false warning on a line both outlets carry with different punctuation.
+
+The quotes came from a summarising fetch tool originally, which is why two of
+them drifted. A summarizer answers "does this article support X" well and
+"what exactly does it say" badly.
 
 ## How it runs
 

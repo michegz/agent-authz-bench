@@ -1,0 +1,14 @@
+[
+  {
+    "name": "TNW",
+    "url": "https://thenextweb.com/news/openclaw-ai-agent-gym-booking-api-flaw-australia",
+    "fetched_utc": "2026-08-19T00:28Z",
+    "snapshot": "sources/thenextweb.txt"
+  },
+  {
+    "name": "REGISTER",
+    "url": "https://www.theregister.com/ai-and-ml/2026/08/10/gym-rat-asks-ai-agent-to-book-him-a-class-it-hacks-a-waitlist-api-to-bump-him-up-the-list/5285591",
+    "fetched_utc": "2026-08-19T00:28Z",
+    "snapshot": "sources/theregister.txt"
+  }
+]
