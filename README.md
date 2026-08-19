@@ -55,7 +55,7 @@ obtained at all.
 It prints its own coverage limits, because a green run means "every quotation
 is verbatim" and not "this page is checked."
 
-Adversarially probed, all five behaving correctly:
+Adversarially probed, all six behaving correctly:
 
 | Probe | Result |
 |---|---|
@@ -63,6 +63,7 @@ Adversarially probed, all five behaving correctly:
 | One word changed mid-quote | FAIL, exit 1 |
 | Real quote cited to the wrong source | FAIL, exit 1, names where it actually appears |
 | Terminal comma changed to a period | WARN, printed with both characters |
+| Citation deleted from a claim | FAIL, exit 1, RESULT line reads NOT CLEAN |
 | Network unavailable | Falls back to snapshot and says so |
 
 Three of those checks exist because the first version of the script did not

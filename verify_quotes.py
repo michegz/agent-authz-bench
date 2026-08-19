@@ -5,8 +5,8 @@ Check every quotation on index.html against the sources it attributes them to.
 Prefers a live fetch of each source. Falls back to the committed snapshot in
 sources/ when the network is unavailable, and says which mode it used.
 
-Exit codes: 0 all quotations verbatim, 1 one or more failed, 2 could not
-obtain a source at all.
+Exit codes: 0 all quotations verbatim and cited, 1 a quotation failed or lost
+its citation, 2 could not obtain a source at all.
 
 Each quotation is checked against the sources its own claim cites, not against
 whichever article happens to contain it.
@@ -124,8 +124,12 @@ def main():
         if len(norm(stripped)) > 40:
             unquoted += 1
 
-    print("\nRESULT  %d quotations, %d failed, %d punctuation warnings, %d unattributed"
-          % (len(pairs), fails, warns, unattributed))
+    verdict = "CLEAN" if not (fails or unattributed) else "NOT CLEAN"
+    print("\nRESULT  %s: %d quotations, %d failed, %d unattributed, %d punctuation warnings"
+          % (verdict, len(pairs), fails, unattributed, warns))
+    if unattributed:
+        print("        An uncited quotation is a defect on a page whose premise is that"
+              "\n        every sourced sentence carries its source. Exiting non-zero.")
     print("""
 COVERAGE, and what this does not catch
   1. It checks quotations only. Assertions in prose are not verified by
@@ -139,7 +143,7 @@ COVERAGE, and what this does not catch
   4. Snapshots in sources/ are a point-in-time copy. If an article is later
      corrected, a snapshot run will keep passing against the old text.""" % unquoted)
 
-    sys.exit(1 if fails else 0)
+    sys.exit(1 if (fails or unattributed) else 0)
 
 
 if __name__ == "__main__":
