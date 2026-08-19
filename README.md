@@ -32,7 +32,8 @@ carries its own source link ([The Next Web](https://thenextweb.com/news/openclaw
 [The Register](https://www.theregister.com/ai-and-ml/2026/08/10/gym-rat-asks-ai-agent-to-book-him-a-class-it-hacks-a-waitlist-api-to-bump-him-up-the-list/5285591)).
 Where the sources disagree, the page says so rather than picking the better story.
 
-**Correction, 18 August 2026.** The first published version of this page said the
+**Correction, 2026-08-19 00:08 UTC** (commit `0bd2380`, 44 minutes after first
+publication at 2026-08-18 23:24 UTC). The first published version of this page said the
 class was full, that the agent took the cancelled member's seat, that the member
 was a woman, and that the incident happened on 9 August. None of that is in the
 reporting. He was fourth on a waitlist and moved to third; the cancelled member
